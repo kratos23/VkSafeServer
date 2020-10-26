@@ -1,0 +1,10 @@
+GET http://localhost:8080/markets?
+ token=a63196098b4fc0130c1dd8813bc343a1e8c74edb0919be203fd1d5b3df1c8aa45bc16fe37e3cdb77e5860
+ &page=0
+Accept: application/json
+
+###
+GET http://localhost:8080/markets?
+ token=a63196098b4fc0130c1dd8813bc343a1e8c74edb0919be203fd1d5b3df1c8aa45bc16fe37e3cdb77e5860
+ &page=1
+Accept: application/json
