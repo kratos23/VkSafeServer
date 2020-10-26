@@ -6,7 +6,7 @@ import vk.VK
 fun createStubMarkets() {
     fun stubMarket(id: Long, marketName: String) {
         createIfNotExists(id = id) {
-            name = marketName
+            name = marketName.toUpperCase()
             adminId = VK.MY_ID
         }
     }
