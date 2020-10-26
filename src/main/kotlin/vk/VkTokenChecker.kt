@@ -6,15 +6,15 @@ import org.json.JSONObject
 
 class VkTokenChecker {
     // if valid returns userId
-    fun check(token:String) : String? {
+    fun check(token: String): String? {
         val client = VkApi.client
         val req = Request.Builder()
                 .url("https://api.vk.com/method/secure.checkToken?token=$token")
                 .get()
                 .build()
         val resp = client.newCall(req).execute()
-        val json = JSONObject(resp.body)
+        val json = JSONObject(resp.body!!.string())
         resp.close()
-        return json.optString("user_id", null)
+        return json.optJSONObject("response")?.optString("user_id", null)
     }
 }

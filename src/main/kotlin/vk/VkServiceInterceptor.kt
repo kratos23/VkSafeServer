@@ -10,6 +10,7 @@ class VkServiceInterceptor(private val serviceToken : String) : Interceptor {
                 .newBuilder()
                 .addQueryParameter("access_token", serviceToken)
                 .addQueryParameter("v", VK.API_VERSION)
+                .addQueryParameter("client_secret", VK.CLIENT_SECRET)
                 .build()
         val newReq = oldReq
                 .newBuilder()

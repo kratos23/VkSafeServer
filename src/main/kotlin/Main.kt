@@ -1,11 +1,13 @@
-import network.VkApi
-import org.eclipse.jetty.servlet.ServletContextHandler
-import vk.VK
-import vk.VkTokenChecker
+import db.data.createStubMarkets
+import db.tables.MarketTable
+import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.transactions.transaction
 
 fun main() {
-    val vkTokenChecker = VkTokenChecker()
-    vkTokenChecker.check("12")
-    /*val context = ServletContextHandler(ServletContextHandler.NO_SESSIONS or ServletContextHandler.GZIP
-            or ServletContextHandler.SECURITY)*/
+    Database.connect("jdbc:sqlite:./db", driver = "org.sqlite.JDBC", user = "root", password = "")
+    transaction {
+        SchemaUtils.create(MarketTable)
+        createStubMarkets()
+    }
 }
