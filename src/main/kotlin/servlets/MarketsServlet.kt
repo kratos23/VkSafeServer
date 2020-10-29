@@ -51,13 +51,12 @@ class MarketsServlet : HttpServlet() {
                         .fields(listOf(GroupField.ACTIVITY, GroupField.MARKET))
                         .executeAsString()
                 resp.contentType = "application/json; charset=UTF-8"
-                println(response)
                 resp.writer.println(response)
             }
         }
     }
 
     companion object {
-        const val PAGE_SIZE = 5
+        const val PAGE_SIZE = 25
     }
 }
