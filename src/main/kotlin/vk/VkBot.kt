@@ -154,6 +154,7 @@ class VkBot : CallbackApiLongPoll(VkApiClient(HttpTransportClient.getInstance())
         } ?: return
         transaction {
             order.status = Order.Status.PAID
+            order.payedAt = System.currentTimeMillis()
         }
         sendMessageToUser("Заказ#$orderId успешно оплачен." +
                 " Следить за статусом заказа вы можете в нашем мобильном приложении.", order.clientId.toInt())

@@ -4,6 +4,7 @@ import db.tables.OrderTable
 import org.jetbrains.exposed.dao.LongEntity
 import org.jetbrains.exposed.dao.LongEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -38,5 +39,20 @@ class Order(id: EntityID<Long>) : LongEntity(id) {
             val cnt = cart.getLong(product.getLong("id").toString())
             price.getString("amount").toLong() * cnt
         }.sum()
+    }
+
+    fun toJSON(): JSONObject {
+        return transaction {
+            JSONObject().apply {
+                put("groupId", groupId)
+                put("status", status)
+                put("payedAt", payedAt)
+                put("clientId", clientId)
+                put("cartJSON", cartJSON)
+                put("address", address)
+                put("comment", comment)
+                put("price", getTotalPrice())
+            }
+        }
     }
 }

@@ -18,6 +18,7 @@ class MarketsServlet : HttpServlet() {
 
     override fun doGet(req: HttpServletRequest, resp: HttpServletResponse) {
         val token = req.getParameter("token")
+        println(token)
         val tokenChecker = VkTokenChecker()
         val userId = tokenChecker.check(token)
         if (userId == null) {
