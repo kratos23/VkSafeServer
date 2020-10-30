@@ -12,4 +12,6 @@ object OrderTable : LongIdTable() {
     val address = text("address").default("")
     val comment = text("comment").default("")
     val productsJSON = text("productsJSON")
+    val paymentFormSent = bool("paymentFormSent").default(false)
+    val paymentConfirmationSent = bool("paymentConfirmSent").default(false)
 }

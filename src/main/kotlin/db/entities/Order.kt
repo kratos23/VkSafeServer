@@ -4,6 +4,8 @@ import db.tables.OrderTable
 import org.jetbrains.exposed.dao.LongEntity
 import org.jetbrains.exposed.dao.LongEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
+import org.json.JSONArray
+import org.json.JSONObject
 
 class Order(id: EntityID<Long>) : LongEntity(id) {
     companion object : LongEntityClass<Order>(OrderTable)
@@ -16,6 +18,8 @@ class Order(id: EntityID<Long>) : LongEntity(id) {
     var address by OrderTable.address
     var comment by OrderTable.comment
     var productsJSON by OrderTable.productsJSON
+    var paymentFormSent by OrderTable.paymentFormSent
+    var paymentConfirmSent by OrderTable.paymentConfirmationSent
 
     enum class Status {
         CREATED,
@@ -24,5 +28,15 @@ class Order(id: EntityID<Long>) : LongEntity(id) {
         DISPUTE,
         CLOSED,
         CANCELED
+    }
+
+    fun getTotalPrice(): Long {
+        val cart = JSONObject(cartJSON).getJSONObject("countMap")
+        val products = JSONArray(productsJSON)
+        return products.filterIsInstance(JSONObject::class.java).map { product ->
+            val price = product.getJSONObject("price")
+            val cnt = cart.getLong(product.getLong("id").toString())
+            price.getString("amount").toLong() * cnt
+        }.sum()
     }
 }

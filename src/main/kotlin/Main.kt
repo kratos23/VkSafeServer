@@ -1,6 +1,7 @@
 import db.data.createStubMarkets
 import db.tables.MarketTable
 import db.tables.OrderTable
+import db.tables.VKMessagesTable
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.servlet.ServletContextHandler
 import org.eclipse.jetty.servlet.ServletHolder
@@ -10,6 +11,19 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import servlets.MarketsServlet
 import servlets.NewOrderServlet
 import vk.VK
+import vk.VkBot
+import java.lang.reflect.Field
+import java.lang.reflect.Modifier
+import kotlin.concurrent.thread
+
+@Throws(Exception::class)
+fun setFinalStatic(field: Field, newValue: Any?) {
+    field.isAccessible = true
+    val modifiersField: Field = Field::class.java.getDeclaredField("modifiers")
+    modifiersField.isAccessible = true
+    modifiersField.setInt(field, field.modifiers and Modifier.FINAL.inv())
+    field.set(null, newValue)
+}
 
 fun main(args: Array<String>) {
     VK.BOT_API_KEY = args[0]
@@ -18,12 +32,18 @@ fun main(args: Array<String>) {
     transaction {
         SchemaUtils.create(MarketTable)
         SchemaUtils.create(OrderTable)
+        SchemaUtils.create(VKMessagesTable)
         createStubMarkets()
+    }
+
+    val vkBot = VkBot()
+    thread {
+        vkBot.run()
     }
 
     val context = ServletContextHandler(ServletContextHandler.NO_SESSIONS or ServletContextHandler.GZIP)
     context.addServlet(ServletHolder(MarketsServlet()), "/markets")
-    context.addServlet(ServletHolder(NewOrderServlet()), "/orders/new")
+    context.addServlet(ServletHolder(NewOrderServlet(vkBot)), "/orders/new")
     val server = Server(8080)
     server.handler = context
     server.start()

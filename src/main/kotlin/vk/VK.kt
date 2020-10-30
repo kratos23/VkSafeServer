@@ -7,4 +7,5 @@ object VK {
     var BOT_API_KEY = ""
 
     const val MY_ID = 151208253L
+    const val BOT_GROUP_ID = 199853701
 }

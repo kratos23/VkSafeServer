@@ -2,25 +2,14 @@ package servlets
 
 import db.entities.Order
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.json.JSONArray
 import org.json.JSONObject
+import vk.VkBot
 import vk.VkTokenChecker
 import javax.servlet.http.HttpServlet
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-class NewOrderServlet : HttpServlet() {
-
-    private fun getTotalPrice(productsJson: String, cartJSON: String): Long {
-        val cart = JSONObject(cartJSON).getJSONObject("countMap")
-        val products = JSONArray(productsJson)
-        val totalPrice = products.filterIsInstance(JSONObject::class.java).map { product ->
-            val price = product.getJSONObject("price")
-            val cnt = cart.getLong(product.getLong("id").toString())
-            price.getString("amount").toLong() * cnt
-        }.sum()
-        return totalPrice
-    }
+class NewOrderServlet(val vkBot: VkBot) : HttpServlet() {
 
     private fun processNewOrder(req: HttpServletRequest, resp: HttpServletResponse) {
         val token = req.getParameter("token")
@@ -37,8 +26,6 @@ class NewOrderServlet : HttpServlet() {
             val reqAddress = bodyJSON.getString("address")
             val reqProductsJSON = bodyJSON.getString("products")
 
-            // TODO SEND USER VK pay form in vk bot
-
             val orderId = transaction {
                 Order.new {
                     status = Order.Status.CREATED
@@ -48,12 +35,13 @@ class NewOrderServlet : HttpServlet() {
                     address = reqAddress
                     comment = reqComment
                     productsJSON = reqProductsJSON
-                }.id
+                }.id.value
             }
             val responseJSON = JSONObject()
             responseJSON.put("orderId", orderId)
             resp.status = 200
             resp.writer.println(responseJSON.toString())
+            vkBot.newOrderReceived(orderId)
         }
     }
 

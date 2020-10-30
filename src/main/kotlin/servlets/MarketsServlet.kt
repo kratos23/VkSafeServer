@@ -3,7 +3,7 @@ package servlets
 import com.vk.api.sdk.client.VkApiClient
 import com.vk.api.sdk.client.actors.UserActor
 import com.vk.api.sdk.httpclient.HttpTransportClient
-import com.vk.api.sdk.queries.groups.GroupField
+import com.vk.api.sdk.objects.groups.Fields
 import db.tables.MarketTable
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -48,7 +48,7 @@ class MarketsServlet : HttpServlet() {
                 val response = vk.groups().getById(userActor)
                         .groupIds(marketsIds)
                         .unsafeParam("language", 0)
-                        .fields(listOf(GroupField.ACTIVITY, GroupField.MARKET))
+                        .fields(listOf(Fields.ACTIVITY, Fields.MARKET))
                         .executeAsString()
                 resp.contentType = "application/json; charset=UTF-8"
                 resp.writer.println(response)
