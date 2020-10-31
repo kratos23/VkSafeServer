@@ -45,7 +45,7 @@ class VkBot : CallbackApiLongPoll(VkApiClient(HttpTransportClient.getInstance())
         }
     }
 
-    private fun sendMessageToAdmin(msg: String) = sendMessageToUser(msg, VK.MY_ID.toInt())
+    fun sendMessageToAdmin(msg: String) = sendMessageToUser(msg, VK.MY_ID.toInt())
 
     private fun sendOrderPaymentForm(orderId: Long) {
         try {

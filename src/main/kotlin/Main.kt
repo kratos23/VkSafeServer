@@ -8,10 +8,7 @@ import org.eclipse.jetty.servlet.ServletHolder
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
-import servlets.CustomerOrderListServlet
-import servlets.MarketsServlet
-import servlets.NewOrderServlet
-import servlets.OrderInfoServlet
+import servlets.*
 import vk.VK
 import vk.VkBot
 import kotlin.concurrent.thread
@@ -37,6 +34,7 @@ fun main(args: Array<String>) {
     context.addServlet(ServletHolder(NewOrderServlet(vkBot)), "/orders/new")
     context.addServlet(ServletHolder(CustomerOrderListServlet()), "/customer/orders")
     context.addServlet(ServletHolder(OrderInfoServlet()), "/order")
+    context.addServlet(ServletHolder(OrderButtonsServlet(vkBot)), "/order/status")
     val server = Server(8080)
     server.handler = context
     server.start()
