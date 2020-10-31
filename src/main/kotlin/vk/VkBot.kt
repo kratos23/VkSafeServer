@@ -10,6 +10,7 @@ import db.entities.Market
 import db.entities.Order
 import db.entities.VkMessages
 import db.tables.OrderTable
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.json.JSONArray
@@ -112,9 +113,7 @@ class VkBot : CallbackApiLongPoll(VkApiClient(HttpTransportClient.getInstance())
     private fun checkForPendingOrders(userId: Long) {
         val newOrderIds = transaction {
             OrderTable.select {
-                OrderTable.clientId eq userId
-                OrderTable.paymentFormSent eq false
-                OrderTable.status eq Order.Status.CREATED
+                OrderTable.clientId eq userId and (OrderTable.paymentFormSent eq false) and (OrderTable.status eq Order.Status.CREATED)
             }.map { order ->
                 order[OrderTable.id].value
             }
