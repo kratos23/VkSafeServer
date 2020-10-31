@@ -37,9 +37,15 @@ class CustomerOrderListServlet : HttpServlet() {
             }
         }
         val resultJSON = JSONObject()
-        val groupsJSON = JSONObject(apiClient.groups().getById(userActor)
-                .groupIds(groupIdSet.map { it.toString() }.toList())
-                .executeAsString())
+        val groupsJSON = if (groupIdSet.isNotEmpty()) {
+            JSONObject(apiClient.groups().getById(userActor)
+                    .groupIds(groupIdSet.map { it.toString() }.toList())
+                    .executeAsString())
+        } else {
+            JSONObject().apply {
+                put("response", JSONArray())
+            }
+        }
         resultJSON.put("groups", groupsJSON)
         resultJSON.put("orders", ordersJSON)
         resp.status = 200

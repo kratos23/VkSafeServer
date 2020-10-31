@@ -41,10 +41,16 @@ class MarketOrdersListServlet : HttpServlet() {
             }
         }
         val resultJSON = JSONObject()
-        val groupsJSON = JSONObject(apiClient.users().get(userActor)
-                .userIds(clientIdSet.map { it.toString() }.toList())
-                .fields(Fields.PHOTO_200)
-                .executeAsString())
+        val groupsJSON = if (clientIdSet.isNotEmpty()) {
+            JSONObject(apiClient.users().get(userActor)
+                    .userIds(clientIdSet.map { it.toString() }.toList())
+                    .fields(Fields.PHOTO_200)
+                    .executeAsString())
+        } else {
+            JSONObject().apply {
+                put("response", JSONArray())
+            }
+        }
         resultJSON.put("groups", groupsJSON)
         resultJSON.put("orders", ordersJSON)
         resp.status = 200

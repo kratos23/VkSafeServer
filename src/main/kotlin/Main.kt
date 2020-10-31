@@ -37,7 +37,7 @@ fun main(args: Array<String>) {
     context.addServlet(ServletHolder(OrderButtonsServlet(vkBot)), "/order/status")
     context.addServlet(ServletHolder(UserMarketServlet()), "/user/stores")
     context.addServlet(ServletHolder(MarketOrdersListServlet()), "/store/orders")
-    val server = Server(8080)
+    val server = Server(args.getOrElse(2) { "80" }.toIntOrNull() ?: 80)
     server.handler = context
     server.start()
 }
