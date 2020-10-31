@@ -44,6 +44,7 @@ class Order(id: EntityID<Long>) : LongEntity(id) {
     fun toJSON(): JSONObject {
         return transaction {
             JSONObject().apply {
+                put("id", this@Order.id.value)
                 put("groupId", groupId)
                 put("status", status)
                 put("payedAt", payedAt)

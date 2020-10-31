@@ -3,6 +3,7 @@ package servlets
 import com.vk.api.sdk.client.VkApiClient
 import com.vk.api.sdk.client.actors.UserActor
 import com.vk.api.sdk.httpclient.HttpTransportClient
+import com.vk.api.sdk.objects.users.Fields
 import db.entities.Order
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.json.JSONObject
@@ -35,6 +36,7 @@ class OrderInfoServlet : HttpServlet() {
         resultJSON.put("order", orderJSON)
         resultJSON.put("user", apiClient.users().get(userActor)
                 .userIds(order.clientId.toString())
+                .fields(Fields.PHOTO_200)
                 .executeAsString()
         )
         resultJSON.put("group", apiClient.groups().getById(userActor)

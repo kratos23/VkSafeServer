@@ -5,6 +5,7 @@ import com.vk.api.sdk.client.actors.UserActor
 import com.vk.api.sdk.httpclient.HttpTransportClient
 import db.entities.Order
 import db.tables.OrderTable
+import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.json.JSONArray
 import org.json.JSONObject
@@ -30,7 +31,7 @@ class CustomerOrderListServlet : HttpServlet() {
         transaction {
             Order.find {
                 OrderTable.clientId eq userId
-            }.forEach {
+            }.orderBy(OrderTable.id to SortOrder.DESC).forEach {
                 ordersJSON.put(it.toJSON())
                 groupIdSet.add(it.groupId)
             }
