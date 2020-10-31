@@ -5,6 +5,7 @@ import com.vk.api.sdk.client.actors.UserActor
 import com.vk.api.sdk.httpclient.HttpTransportClient
 import com.vk.api.sdk.objects.groups.Fields
 import db.tables.MarketTable
+import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.upperCase
@@ -36,7 +37,7 @@ class MarketsServlet : HttpServlet() {
                                     .upperCase()
                                     .like("%${q.toUpperCase()}%")
                         }
-                        .orderBy(MarketTable.id)
+                        .orderBy(MarketTable.id to SortOrder.DESC)
                         .limit(PAGE_SIZE, offset)
                         .map { it[MarketTable.id].value.toString() }
             }
