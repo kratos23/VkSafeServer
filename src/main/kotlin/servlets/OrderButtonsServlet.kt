@@ -2,6 +2,7 @@ package servlets
 
 import db.entities.Market
 import db.entities.Order
+import db.entities.getUserMarket
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.json.JSONObject
 import vk.VkBot
@@ -24,7 +25,7 @@ class OrderButtonsServlet(private val bot: VkBot) : HttpServlet() {
         transaction {
             order.status = Order.Status.DISPUTE
         }
-        bot.sendMessageToAdmin("""Открыт спор по заказу#{$order.id}  между пользователем
+        bot.sendMessageToAdmin("""Открыт спор по заказу#{${order.id.value}  между пользователем
 | id${order.clientId} и магазином ${order.groupId}""".trimMargin())
     }
 
@@ -57,6 +58,7 @@ class OrderButtonsServlet(private val bot: VkBot) : HttpServlet() {
         val order = transaction {
             Order.findById(orderId)!!
         }
+        val market = transaction { getUserMarket(userId) }
         if (order.status.toString() != fromState) {
             resp.status = 200
         } else {
@@ -85,6 +87,32 @@ class OrderButtonsServlet(private val bot: VkBot) : HttpServlet() {
                         resp.sendError(403)
                     }
                 }
+                CANCEL_ORDER_ORDER_STORE_BTN_ID -> {
+                    if (market?.adminId == userId && order.status == Order.Status.PAID) {
+                        cancelOrder(order)
+                        resp.status = 200
+                    } else {
+                        resp.sendError(403)
+                    }
+                }
+                CONFIRM_ORDER_STORE_BTN_ID -> {
+                    if (market?.adminId == userId && order.status == Order.Status.PAID) {
+                        transaction {
+                            order.status = Order.Status.CONFIRMED
+                        }
+                        resp.status = 200
+                    } else {
+                        resp.sendError(403)
+                    }
+                }
+                OPEN_DISPUTE_BTN_STORE_ID -> {
+                    if (market?.adminId == userId && order.status == Order.Status.CONFIRMED) {
+                        openDispute(order)
+                        resp.status = 200
+                    } else {
+                        resp.sendError(403)
+                    }
+                }
             }
         }
     }
@@ -93,5 +121,8 @@ class OrderButtonsServlet(private val bot: VkBot) : HttpServlet() {
         const val CUSTOMER_CANCEL_ORDER_BTN_ID = "cancel_order_btn_customer"
         const val OPEN_DISPUTE_CUSTOMER_BTN_ID = "open_dispute_customer"
         const val CONFIRM_ORDER_CUSTOMER_BTN_ID = "confirm_order_customer"
+        const val CANCEL_ORDER_ORDER_STORE_BTN_ID = "cancel_order_store"
+        const val CONFIRM_ORDER_STORE_BTN_ID = "confirm_order_store"
+        const val OPEN_DISPUTE_BTN_STORE_ID = "open_dispute_btn_store_id"
     }
 }
